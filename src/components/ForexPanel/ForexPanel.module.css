@@ -1,0 +1,19 @@
+.forexPanel{
+    background: #c8d6e7;
+    width: 60%;
+    height: 100%;
+    border-radius: 10px;
+    border: 2px solid steelblue;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    min-width: 710px;
+    min-height: 200px;
+}
+
+.toggler{
+    text-decoration: underline;
+    color: darkblue;
+    cursor: pointer;
+}

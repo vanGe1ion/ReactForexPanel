@@ -1,3 +1,13 @@
+#root{
+  display: flex;
+  justify-content: center;
+  margin-top: 20vh;
+}
+
+
 .App {
-  text-align: center;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  height: 60vh;
 }
