@@ -1,55 +1,61 @@
 import React, { useEffect, useState } from "react";
 import ConverterGroup from "../ConverterGroup/ConverterGroup";
 import cl from "./Converter.module.css";
-import { Fetch } from "../../utils/script";
 import ExchangeSelect from "../ExchangeSelect/ExchangeSelect";
+import NumberInput from "../NumberInput/NumberInput";
+import { getForex } from "../../API/forexAPI";
 
 const Converter = ({ getActual, toggled }) => {
-  const [exchanges, setExchanges] = useState({});
-  const [exchange1, setExchange1] = useState("");
-  const [exchange2, setExchange2] = useState("");
-  const [value1, setValue1] = useState("");
-  const [value2, setValue2] = useState("");
+  const [rateList, setRateList] = useState({});
+  const [currency1, setCurrency1] = useState("");
+  const [currency2, setCurrency2] = useState("");
+  const [value1, setValue1] = useState(0);
+  const [value2, setValue2] = useState(0);
+
+  const [currentInput, setCurrentInput] = useState(1);
 
   useEffect(() => {
-    Fetch(
-      "http://data.fixer.io/api/latest?access_key=ea516aed6f2b591d600566b784ae5350&format=1",
-      (data) => {
-        setExchanges(data.rates);
-        getActual(data.date);
-        setExchange1("EUR");
-        setExchange2("RUB");
-        setValue1("100");
-        setValue2("0");
-      }
-    );
+    getForex((data) => {
+      setRateList(data.rates);
+      getActual(data.date);
+      setCurrency1("EUR");
+      setCurrency2("RUB");
+      setValue1(100);
+    });
   }, []);
 
   useEffect(() => {
-    setValue2(calculate(exchange1, exchange2, value1));
-  }, [exchange1, exchange2, value1]);
+    if (currentInput === 1) setValue2(calculate());
+    if (currentInput === 2) setValue1(calculate());
+  }, [currency1, currency2, value1, value2]);
 
   useEffect(() => {
     toggleExchange({
-      exchange1,
-      exchange2,
+      currency1,
+      currency2,
       value2,
     });
   }, [toggled]);
 
-  const calculate = (exchange1, exchange2, value1) => {
-    if (isNaN(Number(value1))) return "Некорректный ввод";
-    if (isNaN(exchanges[exchange1])) return "0";
-    return (
-      (Number(value1) * exchanges[exchange2]) /
-      exchanges[exchange1]
-    ).toFixed(4);
+  const calculate = () => {
+    let result = null;
+    if (currentInput === 1)
+      result = ((value1 * rateList[currency2]) / rateList[currency1]).toFixed(
+        4
+      );
+    if (currentInput === 2)
+      result = ((value2 * rateList[currency1]) / rateList[currency2]).toFixed(
+        4
+      );
+    if (isNaN(result)) return 0;
+    return result;
   };
 
   const toggleExchange = (oldState) => {
+    setCurrency1(oldState.currency2);
+    setCurrency2(oldState.currency1);
+    setCurrentInput(1);
     setValue1(oldState.value2);
-    setExchange1(oldState.exchange2);
-    setExchange2(oldState.exchange1);
   };
 
   return (
@@ -60,14 +66,16 @@ const Converter = ({ getActual, toggled }) => {
 
       <ConverterGroup>
         <ExchangeSelect
-          exchanges={Object.keys(exchanges)}
-          value={exchange1}
-          onChange={(e) => setExchange1(e.target.value)}
+          rateList={Object.keys(rateList)}
+          value={currency1}
+          onChange={(e) => setCurrency1(e.target.value)}
         />
-        <input
+        <NumberInput
           value={value1}
-          onChange={(e) => setValue1(e.target.value)}
-          type="text"
+          onChange={(e) => {
+            setValue1(e.target.value);
+            setCurrentInput(1);
+          }}
         />
       </ConverterGroup>
 
@@ -78,11 +86,17 @@ const Converter = ({ getActual, toggled }) => {
 
       <ConverterGroup>
         <ExchangeSelect
-          exchanges={Object.keys(exchanges)}
-          value={exchange2}
-          onChange={(e) => setExchange2(e.target.value)}
+          rateList={Object.keys(rateList)}
+          value={currency2}
+          onChange={(e) => setCurrency2(e.target.value)}
         />
-        <input value={value2} onChange={() => {}} type="text" />
+        <NumberInput
+          value={value2}
+          onChange={(e) => {
+            setValue2(e.target.value);
+            setCurrentInput(2);
+          }}
+        />
       </ConverterGroup>
     </div>
   );

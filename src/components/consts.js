@@ -1,0 +1,1 @@
+export const FOREX_API = 'http://data.fixer.io/api/latest';
