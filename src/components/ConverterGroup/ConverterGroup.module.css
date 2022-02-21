@@ -15,7 +15,6 @@
 
 .converterGroup > :not(span){
     border: 2px solid black;
-    height: 30px;
     padding: 0;
     background-color: white;
 }

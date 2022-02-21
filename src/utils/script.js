@@ -5,6 +5,6 @@ export async function Fetch(get, callback) {
       const response = await axios.get(get)
       callback(response.data);
     }catch(e){
-      alert(e)
+      alert('Ошибка запроса к внешнему ресурсу: ' + e)
     }
   }

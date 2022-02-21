@@ -1,10 +1,11 @@
 import React from 'react'
 
-const ExchangeSelect = ({exchanges}) => {
+const ExchangeSelect = ({exchanges, value, onChange}) => {
+
   return (
-    <select>
-        {Object.keys(exchanges).map((key) => 
-            <option key={key} value={exchanges[key]}>{key}</option>
+    <select value={value} onChange={onChange}>
+        {exchanges.map((val) => 
+            <option key={val} value={val}>{val}</option>
         )}
     </select>
   )

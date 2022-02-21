@@ -6,10 +6,14 @@ import cl from "./ForexPanel.module.css"
 const ForexPanel = () => {
 
   const [actuality, setActuality] = useState('');
+  const [toggled, setToggled] = useState(false);
 
   const getActual = (date) => {
-    console.log(date)
       setActuality(date)
+  }
+
+  const toggleExchange = () => {
+    setToggled(prev => !prev)
   }
 
   return (
@@ -17,8 +21,13 @@ const ForexPanel = () => {
 
       <h1>Конвертер валют</h1>
       <h2>Данные актуальны на {actuality}</h2>
-      <Converter getActual={getActual}/>
-      <h2 className={cl.toggler}>поменять валюты местами</h2>
+      <Converter getActual={getActual} toggled={toggled}/>
+      <h2 
+        onClick={() => toggleExchange()} 
+        className={cl.toggler}
+      >
+        поменять валюты местами
+      </h2>
 
     </div>
   )
