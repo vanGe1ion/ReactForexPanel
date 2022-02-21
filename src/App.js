@@ -1,11 +1,11 @@
-import React from 'react';
-import './App.css';
-import ForexPanel from './components/ForexPanel/ForexPanel';
+import React from "react";
+import "./App.css";
+import ForexPanel from "./components/ForexPanel/ForexPanel";
 
 function App() {
   return (
     <div className="App">
-      <ForexPanel/>
+      <ForexPanel />
     </div>
   );
 }

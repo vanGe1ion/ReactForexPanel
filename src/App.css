@@ -1,9 +1,8 @@
-#root{
+#root {
   display: flex;
   justify-content: center;
   margin-top: 20vh;
 }
-
 
 .App {
   display: flex;
