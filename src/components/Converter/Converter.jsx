@@ -1,19 +1,25 @@
 import React, { useEffect, useState } from "react";
 import ConverterGroup from "../ConverterGroup/ConverterGroup";
 import cl from "./Converter.module.css";
-import ExchangeSelect from "../ExchangeSelect/ExchangeSelect";
-import NumberInput from "../NumberInput/NumberInput";
 import { getForex } from "../../API/forexAPI";
 import { proportionCalc } from "../../utils/utils";
-import { FIRST_CURRENCY_INIT_VALUE, FIRST_SUMM_INIT_VALUE, NUMBER_INPUT_FIRST, NUMBER_INPUT_SECOND, SECOND_CURRENCY_INIT_VALUE } from "../consts";
+import {
+  CURRENCY_FIRST_INIT_VALUE,
+  AMOUNT_FIRST_INIT_VALUE,
+  NUMBER_INPUT_FIRST,
+  NUMBER_INPUT_SECOND,
+  CURRENCY_SECOND_INIT_VALUE,
+} from "../consts";
 import ExchangeInput from "../ExchangeInput/ExchangeInput";
 
 const Converter = ({ getActual, toggled }) => {
   const [rateList, setRateList] = useState({});
-  const [currency1, setCurrency1] = useState("");
-  const [currency2, setCurrency2] = useState("");
-  const [value1, setValue1] = useState(0);
-  const [value2, setValue2] = useState(0);
+
+  const [currencyFirst, setCurrencyFirst] = useState("");
+  const [currencySecond, setCurrencySecond] = useState("");
+
+  const [amountFirst, setAmountFirst] = useState(0);
+  const [amountSecond, setAmountSecond] = useState(0);
 
   const [currentInput, setCurrentInput] = useState(NUMBER_INPUT_FIRST);
 
@@ -21,23 +27,23 @@ const Converter = ({ getActual, toggled }) => {
     getForex((data) => {
       setRateList(data.rates);
       getActual(data.date);
-      setCurrency1(FIRST_CURRENCY_INIT_VALUE);
-      setCurrency2(SECOND_CURRENCY_INIT_VALUE);
-      setValue1(FIRST_SUMM_INIT_VALUE);
+      setCurrencyFirst(CURRENCY_FIRST_INIT_VALUE);
+      setCurrencySecond(CURRENCY_SECOND_INIT_VALUE);
+      setAmountFirst(AMOUNT_FIRST_INIT_VALUE);
     });
   }, []);
 
   useEffect(() => {
     const calcResult = calculateExchange();
-    if (currentInput === NUMBER_INPUT_FIRST) setValue2(calcResult);
-    else setValue1(calcResult);
-  }, [currency1, currency2, value1, value2]);
+    if (currentInput === NUMBER_INPUT_FIRST) setAmountSecond(calcResult);
+    else setAmountFirst(calcResult);
+  }, [currencyFirst, currencySecond, amountFirst, amountSecond]);
 
   useEffect(() => {
     toggleExchange({
-      currency1,
-      currency2,
-      value2,
+      currencyFirst,
+      currencySecond,
+      amountSecond,
     });
   }, [toggled]);
 
@@ -46,15 +52,15 @@ const Converter = ({ getActual, toggled }) => {
 
     if (currentInput === NUMBER_INPUT_FIRST)
       proportinMembers = {
-        numerator1: value1,
-        denominator1: rateList[currency1],
-        denominator2: rateList[currency2],
+        numerator1: amountFirst,
+        denominator1: rateList[currencyFirst],
+        denominator2: rateList[currencySecond],
       };
     else
       proportinMembers = {
-        numerator1: value2,
-        denominator1: rateList[currency2],
-        denominator2: rateList[currency1],
+        numerator1: amountSecond,
+        denominator1: rateList[currencySecond],
+        denominator2: rateList[currencyFirst],
       };
 
     let result = proportionCalc(proportinMembers, 4);
@@ -62,10 +68,10 @@ const Converter = ({ getActual, toggled }) => {
   };
 
   const toggleExchange = (oldState) => {
-    setCurrency1(oldState.currency2);
-    setCurrency2(oldState.currency1);
+    setCurrencyFirst(oldState.currencySecond);
+    setCurrencySecond(oldState.currencyFirst);
     setCurrentInput(NUMBER_INPUT_FIRST);
-    setValue1(oldState.value2);
+    setAmountFirst(oldState.amountSecond);
   };
 
   return (
@@ -77,11 +83,11 @@ const Converter = ({ getActual, toggled }) => {
       <ConverterGroup>
         <ExchangeInput
           rateList={rateList}
-          selectValue={currency1}
-          onChangeSelect={(e) => setCurrency1(e.target.value)}
-          inputValue={value1}
+          selectValue={currencyFirst}
+          onChangeSelect={(e) => setCurrencyFirst(e.target.value)}
+          inputValue={amountFirst}
           onChangeInput={(e) => {
-            setValue1(e.target.value);
+            setAmountFirst(e.target.value);
             setCurrentInput(NUMBER_INPUT_FIRST);
           }}
         />
@@ -95,11 +101,11 @@ const Converter = ({ getActual, toggled }) => {
       <ConverterGroup>
         <ExchangeInput
           rateList={rateList}
-          selectValue={currency2}
-          onChangeSelect={(e) => setCurrency2(e.target.value)}
-          inputValue={value2}
+          selectValue={currencySecond}
+          onChangeSelect={(e) => setCurrencySecond(e.target.value)}
+          inputValue={amountSecond}
           onChangeInput={(e) => {
-            setValue2(e.target.value);
+            setAmountSecond(e.target.value);
             setCurrentInput(NUMBER_INPUT_SECOND);
           }}
         />
