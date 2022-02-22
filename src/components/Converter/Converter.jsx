@@ -4,6 +4,7 @@ import cl from "./Converter.module.css";
 import ExchangeSelect from "../ExchangeSelect/ExchangeSelect";
 import NumberInput from "../NumberInput/NumberInput";
 import { getForex } from "../../API/forexAPI";
+import { proportionCalc } from "../../utils/utils";
 
 const Converter = ({ getActual, toggled }) => {
   const [rateList, setRateList] = useState({});
@@ -40,13 +41,23 @@ const Converter = ({ getActual, toggled }) => {
   const calculate = () => {
     let result = null;
     if (currentInput === 1)
-      result = ((value1 * rateList[currency2]) / rateList[currency1]).toFixed(
-        4
-      );
+      result = proportionCalc({
+        numerator1: value1,
+        denominator1: rateList[currency1],
+        denominator2: rateList[currency2]
+      }, 4)
+      // result = ((value1 * rateList[currency2]) / rateList[currency1]).toFixed(
+      //   4
+      // );
     if (currentInput === 2)
-      result = ((value2 * rateList[currency1]) / rateList[currency2]).toFixed(
-        4
-      );
+      result = proportionCalc({
+        numerator1: value2,
+        denominator1: rateList[currency2],
+        denominator2: rateList[currency1]
+      }, 4)
+      // result = ((value2 * rateList[currency1]) / rateList[currency2]).toFixed(
+      //   4
+      // );
     if (isNaN(result)) return 0;
     return result;
   };
