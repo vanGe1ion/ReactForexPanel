@@ -34,9 +34,10 @@ const Converter = ({ setActualDate, toggleCurrency }) => {
   }, []);
 
   useEffect(() => {
-    const calcResult = calculateExchange();
-    if (currentInput === NUMBER_INPUT_FIRST) setAmountSecond(calcResult);
-    else setAmountFirst(calcResult);
+    const calcResult = calculateExchange(currentInput);
+    currentInput === NUMBER_INPUT_FIRST
+      ? setAmountSecond(calcResult)
+      : setAmountFirst(calcResult);
   }, [currencyFirst, currencySecond, amountFirst, amountSecond]);
 
   useEffect(() => {
@@ -47,23 +48,29 @@ const Converter = ({ setActualDate, toggleCurrency }) => {
     });
   }, [toggleCurrency]);
 
-  const calculateExchange = () => {
-    let proportinMembers = {};
+  const calculateExchange = (inputCurrent) => {
+    let proportionMembers = {};
 
-    if (currentInput === NUMBER_INPUT_FIRST)
-      proportinMembers = {
-        numerator1: amountFirst,
-        denominator1: rateList[currencyFirst],
-        denominator2: rateList[currencySecond],
-      };
-    else
-      proportinMembers = {
-        numerator1: amountSecond,
-        denominator1: rateList[currencySecond],
-        denominator2: rateList[currencyFirst],
-      };
+    switch (inputCurrent) {
+      case NUMBER_INPUT_FIRST: {
+        proportionMembers = {
+          numeratorLeft: amountFirst,
+          denominatorLeft: rateList[currencyFirst],
+          denominatorRight: rateList[currencySecond],
+        };
+        break;
+      }
+      case NUMBER_INPUT_SECOND: {
+        proportionMembers = {
+          numeratorLeft: amountSecond,
+          denominatorLeft: rateList[currencySecond],
+          denominatorRight: rateList[currencyFirst],
+        };
+        break;
+      }
+    }
 
-    let result = proportionCalc(proportinMembers, 4);
+    let result = proportionCalc(proportionMembers, 4);
     return isNaN(result) ? 0 : result;
   };
 
