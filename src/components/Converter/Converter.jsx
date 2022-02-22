@@ -12,7 +12,7 @@ import {
 } from "../consts";
 import ExchangeInput from "../ExchangeInput/ExchangeInput";
 
-const Converter = ({ getActual, toggled }) => {
+const Converter = ({ setActualDate, toggleCurrency }) => {
   const [rateList, setRateList] = useState({});
 
   const [currencyFirst, setCurrencyFirst] = useState("");
@@ -26,7 +26,7 @@ const Converter = ({ getActual, toggled }) => {
   useEffect(() => {
     getForex((data) => {
       setRateList(data.rates);
-      getActual(data.date);
+      setActualDate(data.date);
       setCurrencyFirst(CURRENCY_FIRST_INIT_VALUE);
       setCurrencySecond(CURRENCY_SECOND_INIT_VALUE);
       setAmountFirst(AMOUNT_FIRST_INIT_VALUE);
@@ -40,12 +40,12 @@ const Converter = ({ getActual, toggled }) => {
   }, [currencyFirst, currencySecond, amountFirst, amountSecond]);
 
   useEffect(() => {
-    toggleExchange({
+    toggleCurrrency({
       currencyFirst,
       currencySecond,
       amountSecond,
     });
-  }, [toggled]);
+  }, [toggleCurrency]);
 
   const calculateExchange = () => {
     let proportinMembers = {};
@@ -67,7 +67,7 @@ const Converter = ({ getActual, toggled }) => {
     return isNaN(result) ? 0 : result;
   };
 
-  const toggleExchange = (oldState) => {
+  const toggleCurrrency = (oldState) => {
     setCurrencyFirst(oldState.currencySecond);
     setCurrencySecond(oldState.currencyFirst);
     setCurrentInput(NUMBER_INPUT_FIRST);
