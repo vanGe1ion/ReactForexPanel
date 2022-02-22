@@ -5,7 +5,7 @@ import ExchangeSelect from "../ExchangeSelect/ExchangeSelect";
 import NumberInput from "../NumberInput/NumberInput";
 import { getForex } from "../../API/forexAPI";
 import { proportionCalc } from "../../utils/utils";
-import { NUMBER_INPUT_FIRST, NUMBER_INPUT_SECOND } from "../consts";
+import { FIRST_CURRENCY_INIT_VALUE, FIRST_SUMM_INIT_VALUE, NUMBER_INPUT_FIRST, NUMBER_INPUT_SECOND, SECOND_CURRENCY_INIT_VALUE } from "../consts";
 import ExchangeInput from "../ExchangeInput/ExchangeInput";
 
 const Converter = ({ getActual, toggled }) => {
@@ -21,9 +21,9 @@ const Converter = ({ getActual, toggled }) => {
     getForex((data) => {
       setRateList(data.rates);
       getActual(data.date);
-      setCurrency1("EUR");
-      setCurrency2("RUB");
-      setValue1(100);
+      setCurrency1(FIRST_CURRENCY_INIT_VALUE);
+      setCurrency2(SECOND_CURRENCY_INIT_VALUE);
+      setValue1(FIRST_SUMM_INIT_VALUE);
     });
   }, []);
 
