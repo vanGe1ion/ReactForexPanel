@@ -4,47 +4,48 @@ import cl from "./Converter.module.css";
 import { getForex } from "../../API/forexAPI";
 import { proportionCalc } from "../../utils/utils";
 import {
-  CURRENCY_FIRST_INIT_VALUE,
-  AMOUNT_FIRST_INIT_VALUE,
-  NUMBER_INPUT_FIRST,
-  NUMBER_INPUT_SECOND,
-  CURRENCY_SECOND_INIT_VALUE,
+  CURRENCY_FROM_INIT_VALUE,
+  CURRENCY_TO_INIT_VALUE,
+  AMOUNT_FROM_INIT_VALUE,
+  NUMBER_INPUT_FROM,
+  NUMBER_INPUT_TO,
 } from "../consts";
 import ExchangeInput from "../ExchangeInput/ExchangeInput";
 
 const Converter = ({ setActualDate, toggleCurrency }) => {
-  const [rateList, setRateList] = useState({});
+  const [currencyRateListFromAPI, setCurrencyRateListFromAPI] = useState({});
 
-  const [currencyFirst, setCurrencyFirst] = useState("");
-  const [currencySecond, setCurrencySecond] = useState("");
+  const [currencyFrom, setCurrencyFrom] = useState("");
+  const [currencyTo, setCurrencyTo] = useState("");
 
-  const [amountFirst, setAmountFirst] = useState(0);
-  const [amountSecond, setAmountSecond] = useState(0);
+  const [amountFrom, setAmountFrom] = useState(0);
+  const [amountTo, setAmountTo] = useState(0);
 
-  const [currentInput, setCurrentInput] = useState(NUMBER_INPUT_FIRST);
+  const [currentChangedInput, setCurrentChangedInput] =
+    useState(NUMBER_INPUT_FROM);
 
   useEffect(() => {
     getForex((data) => {
-      setRateList(data.rates);
+      setCurrencyRateListFromAPI(data.rates);
       setActualDate(data.date);
-      setCurrencyFirst(CURRENCY_FIRST_INIT_VALUE);
-      setCurrencySecond(CURRENCY_SECOND_INIT_VALUE);
-      setAmountFirst(AMOUNT_FIRST_INIT_VALUE);
+      setCurrencyFrom(CURRENCY_FROM_INIT_VALUE);
+      setCurrencyTo(CURRENCY_TO_INIT_VALUE);
+      setAmountFrom(AMOUNT_FROM_INIT_VALUE);
     });
   }, []);
 
   useEffect(() => {
-    const calcResult = calculateExchange(currentInput);
-    currentInput === NUMBER_INPUT_FIRST
-      ? setAmountSecond(calcResult)
-      : setAmountFirst(calcResult);
-  }, [currencyFirst, currencySecond, amountFirst, amountSecond]);
+    const calcResult = calculateExchange(currentChangedInput);
+    currentChangedInput === NUMBER_INPUT_FROM
+      ? setAmountTo(calcResult)
+      : setAmountFrom(calcResult);
+  }, [currencyFrom, currencyTo, amountFrom, amountTo]);
 
   useEffect(() => {
     toggleCurrrency({
-      currencyFirst,
-      currencySecond,
-      amountSecond,
+      currencyFrom,
+      currencyTo,
+      amountTo,
     });
   }, [toggleCurrency]);
 
@@ -52,19 +53,19 @@ const Converter = ({ setActualDate, toggleCurrency }) => {
     let proportionMembers = {};
 
     switch (inputCurrent) {
-      case NUMBER_INPUT_FIRST: {
+      case NUMBER_INPUT_FROM: {
         proportionMembers = {
-          numeratorLeft: amountFirst,
-          denominatorLeft: rateList[currencyFirst],
-          denominatorRight: rateList[currencySecond],
+          numeratorLeft: amountFrom,
+          denominatorLeft: currencyRateListFromAPI[currencyFrom],
+          denominatorRight: currencyRateListFromAPI[currencyTo],
         };
         break;
       }
-      case NUMBER_INPUT_SECOND: {
+      case NUMBER_INPUT_TO: {
         proportionMembers = {
-          numeratorLeft: amountSecond,
-          denominatorLeft: rateList[currencySecond],
-          denominatorRight: rateList[currencyFirst],
+          numeratorLeft: amountTo,
+          denominatorLeft: currencyRateListFromAPI[currencyTo],
+          denominatorRight: currencyRateListFromAPI[currencyFrom],
         };
         break;
       }
@@ -75,10 +76,11 @@ const Converter = ({ setActualDate, toggleCurrency }) => {
   };
 
   const toggleCurrrency = (oldState) => {
-    setCurrencyFirst(oldState.currencySecond);
-    setCurrencySecond(oldState.currencyFirst);
-    setCurrentInput(NUMBER_INPUT_FIRST);
-    setAmountFirst(oldState.amountSecond);
+    const { currencyTo, currencyFrom, amountTo } = oldState;
+    setCurrencyFrom(currencyTo);
+    setCurrencyTo(currencyFrom);
+    setCurrentChangedInput(NUMBER_INPUT_FROM);
+    setAmountFrom(amountTo);
   };
 
   return (
@@ -89,13 +91,13 @@ const Converter = ({ setActualDate, toggleCurrency }) => {
 
       <ConverterGroup>
         <ExchangeInput
-          rateList={rateList}
-          selectValue={currencyFirst}
-          onChangeSelect={(e) => setCurrencyFirst(e.target.value)}
-          inputValue={amountFirst}
+          rateList={currencyRateListFromAPI}
+          selectValue={currencyFrom}
+          onChangeSelect={(e) => setCurrencyFrom(e.target.value)}
+          inputValue={amountFrom}
           onChangeInput={(e) => {
-            setAmountFirst(e.target.value);
-            setCurrentInput(NUMBER_INPUT_FIRST);
+            setAmountFrom(e.target.value);
+            setCurrentChangedInput(NUMBER_INPUT_FROM);
           }}
         />
       </ConverterGroup>
@@ -107,13 +109,13 @@ const Converter = ({ setActualDate, toggleCurrency }) => {
 
       <ConverterGroup>
         <ExchangeInput
-          rateList={rateList}
-          selectValue={currencySecond}
-          onChangeSelect={(e) => setCurrencySecond(e.target.value)}
-          inputValue={amountSecond}
+          rateList={currencyRateListFromAPI}
+          selectValue={currencyTo}
+          onChangeSelect={(e) => setCurrencyTo(e.target.value)}
+          inputValue={amountTo}
           onChangeInput={(e) => {
-            setAmountSecond(e.target.value);
-            setCurrentInput(NUMBER_INPUT_SECOND);
+            setAmountTo(e.target.value);
+            setCurrentChangedInput(NUMBER_INPUT_TO);
           }}
         />
       </ConverterGroup>
