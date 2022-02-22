@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ConverterGroup from "../ConverterGroup/ConverterGroup";
 import cl from "./Converter.module.css";
-import { getForexAlter } from "../../API/forexAPI";
+import { getForex } from "../../API/forexAPI";
 import { proportionCalc } from "../../utils/utils";
 import {
   CURRENCY_FROM_INIT_VALUE,
@@ -25,7 +25,7 @@ const Converter = ({ setActualDate, toggleCurrency }) => {
     useState(NUMBER_INPUT_FROM);
 
   useEffect(() => {
-    getForexAlter((data) => {
+    getForex((data) => {
       setCurrencyRateListFromAPI(data.rates);
       setActualDate(data.date);
       setCurrencyFrom(CURRENCY_FROM_INIT_VALUE);
