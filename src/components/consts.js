@@ -1,1 +1,1 @@
-export const FOREX_API = 'http://data.fixer.io/api/latest';
+export const FOREX_API_URL = 'http://data.fixer.io/api/latest';
