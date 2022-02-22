@@ -1,4 +1,4 @@
-import { FOREX_API_URL } from "../components/consts";
+import { FOREX_API_URL, ALTER_FOREX_API_URL } from "../components/consts";
 import { axiosGet } from "../utils/utils";
 
 export const getForex = async (callback) => {
@@ -10,4 +10,8 @@ export const getForex = async (callback) => {
     },
     callback
   );
+};
+
+export const getForexAlter = async (callback) => {
+  await axiosGet(ALTER_FOREX_API_URL, {}, callback);
 };

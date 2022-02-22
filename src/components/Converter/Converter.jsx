@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ConverterGroup from "../ConverterGroup/ConverterGroup";
 import cl from "./Converter.module.css";
-import { getForex } from "../../API/forexAPI";
+import { getForexAlter } from "../../API/forexAPI";
 import { proportionCalc } from "../../utils/utils";
 import {
   CURRENCY_FROM_INIT_VALUE,
@@ -25,7 +25,7 @@ const Converter = ({ setActualDate, toggleCurrency }) => {
     useState(NUMBER_INPUT_FROM);
 
   useEffect(() => {
-    getForex((data) => {
+    getForexAlter((data) => {
       setCurrencyRateListFromAPI(data.rates);
       setActualDate(data.date);
       setCurrencyFrom(CURRENCY_FROM_INIT_VALUE);
@@ -50,28 +50,20 @@ const Converter = ({ setActualDate, toggleCurrency }) => {
   }, [toggleCurrency]);
 
   const calculateExchange = (inputCurrent) => {
-    let proportionMembers = {};
+    const proportionMembers =
+      inputCurrent === NUMBER_INPUT_FROM
+        ? {
+            numeratorLeft: amountFrom,
+            denominatorLeft: currencyRateListFromAPI[currencyFrom],
+            denominatorRight: currencyRateListFromAPI[currencyTo],
+          }
+        : {
+            numeratorLeft: amountTo,
+            denominatorLeft: currencyRateListFromAPI[currencyTo],
+            denominatorRight: currencyRateListFromAPI[currencyFrom],
+          };
 
-    switch (inputCurrent) {
-      case NUMBER_INPUT_FROM: {
-        proportionMembers = {
-          numeratorLeft: amountFrom,
-          denominatorLeft: currencyRateListFromAPI[currencyFrom],
-          denominatorRight: currencyRateListFromAPI[currencyTo],
-        };
-        break;
-      }
-      case NUMBER_INPUT_TO: {
-        proportionMembers = {
-          numeratorLeft: amountTo,
-          denominatorLeft: currencyRateListFromAPI[currencyTo],
-          denominatorRight: currencyRateListFromAPI[currencyFrom],
-        };
-        break;
-      }
-    }
-
-    let result = proportionCalc(proportionMembers, 4);
+    const result = proportionCalc(proportionMembers, 4);
     return isNaN(result) ? 0 : result;
   };
 
