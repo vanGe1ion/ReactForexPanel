@@ -15,8 +15,10 @@ export async function axiosGet(getPath, params, callback) {
 
 export function proportionCalc(members, precision = 2) {
   if (members.denominator1 === 0 || members.denominator2 === 0) return null;
-  return (
-    (members.numerator1 * members.denominator2) /
-    members.denominator1
-  ).toFixed(precision);
+  return Number(
+    (
+      (members.numerator1 * members.denominator2) /
+      members.denominator1
+    ).toFixed(precision)
+  );
 }

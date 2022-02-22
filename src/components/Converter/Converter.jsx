@@ -5,6 +5,7 @@ import ExchangeSelect from "../ExchangeSelect/ExchangeSelect";
 import NumberInput from "../NumberInput/NumberInput";
 import { getForex } from "../../API/forexAPI";
 import { proportionCalc } from "../../utils/utils";
+import { NUMBER_INPUT_FIRST, NUMBER_INPUT_SECOND } from "../consts";
 
 const Converter = ({ getActual, toggled }) => {
   const [rateList, setRateList] = useState({});
@@ -13,7 +14,7 @@ const Converter = ({ getActual, toggled }) => {
   const [value1, setValue1] = useState(0);
   const [value2, setValue2] = useState(0);
 
-  const [currentInput, setCurrentInput] = useState(1);
+  const [currentInput, setCurrentInput] = useState(NUMBER_INPUT_FIRST);
 
   useEffect(() => {
     getForex((data) => {
@@ -26,8 +27,10 @@ const Converter = ({ getActual, toggled }) => {
   }, []);
 
   useEffect(() => {
-    if (currentInput === 1) setValue2(calculate());
-    if (currentInput === 2) setValue1(calculate());
+    if (currentInput === NUMBER_INPUT_FIRST)
+      setValue2(calculateExchange(NUMBER_INPUT_FIRST));
+    if (currentInput === NUMBER_INPUT_SECOND)
+      setValue1(calculateExchange(NUMBER_INPUT_SECOND));
   }, [currency1, currency2, value1, value2]);
 
   useEffect(() => {
@@ -38,34 +41,30 @@ const Converter = ({ getActual, toggled }) => {
     });
   }, [toggled]);
 
-  const calculate = () => {
-    let result = null;
-    if (currentInput === 1)
-      result = proportionCalc({
+  const calculateExchange = (inputCurrent) => {
+    let proportinMembers = {};
+
+    if (currentInput === NUMBER_INPUT_FIRST)
+      proportinMembers = {
         numerator1: value1,
         denominator1: rateList[currency1],
-        denominator2: rateList[currency2]
-      }, 4)
-      // result = ((value1 * rateList[currency2]) / rateList[currency1]).toFixed(
-      //   4
-      // );
-    if (currentInput === 2)
-      result = proportionCalc({
-        numerator1: value2,
-        denominator1: rateList[currency2],
-        denominator2: rateList[currency1]
-      }, 4)
-      // result = ((value2 * rateList[currency1]) / rateList[currency2]).toFixed(
-      //   4
-      // );
-    if (isNaN(result)) return 0;
-    return result;
+        denominator2: rateList[currency2],
+      };
+    else
+      proportinMembers = {
+        numerator1: value1,
+        denominator1: rateList[currency1],
+        denominator2: rateList[currency2],
+      };
+
+    let result = proportionCalc(proportinMembers, 4);
+    return isNaN(result) ? 0 : result;
   };
 
   const toggleExchange = (oldState) => {
     setCurrency1(oldState.currency2);
     setCurrency2(oldState.currency1);
-    setCurrentInput(1);
+    setCurrentInput(NUMBER_INPUT_FIRST);
     setValue1(oldState.value2);
   };
 
@@ -85,7 +84,7 @@ const Converter = ({ getActual, toggled }) => {
           value={value1}
           onChange={(e) => {
             setValue1(e.target.value);
-            setCurrentInput(1);
+            setCurrentInput(NUMBER_INPUT_FIRST);
           }}
         />
       </ConverterGroup>
@@ -105,7 +104,7 @@ const Converter = ({ getActual, toggled }) => {
           value={value2}
           onChange={(e) => {
             setValue2(e.target.value);
-            setCurrentInput(2);
+            setCurrentInput(NUMBER_INPUT_SECOND);
           }}
         />
       </ConverterGroup>
