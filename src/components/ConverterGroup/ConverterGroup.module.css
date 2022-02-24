@@ -1,0 +1,19 @@
+.converterGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.converterGroup > * {
+  margin: 5px;
+  height: 2em;
+  font-size: medium;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.converterGroup > :not(span) {
+  border: 2px solid black;
+  padding: 0;
+  background-color: white;
+}
